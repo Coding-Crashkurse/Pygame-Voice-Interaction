@@ -1,0 +1,30 @@
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+.venv/
+venv/
+.env
+.env.*
+
+# Build artifacts
+build/
+dist/
+*.egg-info/
+
+# IDE and tooling
+.vscode/
+.idea/
+*.code-workspace
+
+# Logs and outputs
+*.log
+*.tmp
+pygame_ai_voice/
+
+# OS files
+.DS_Store
+Thumbs.db
+
