@@ -1,9 +1,9 @@
-﻿import os
+import os
 import threading
 import time
 
-os.environ.setdefault('SDL_VIDEODRIVER', 'dummy')
-os.environ.setdefault('SDL_AUDIODRIVER', 'dummy')
+os.environ.setdefault("SDL_VIDEODRIVER", "dummy")
+os.environ.setdefault("SDL_AUDIODRIVER", "dummy")
 
 import pygame
 

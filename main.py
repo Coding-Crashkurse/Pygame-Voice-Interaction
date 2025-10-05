@@ -20,7 +20,6 @@ from constants import (
     GAME_TITLE,
 )
 from inventory.overlay import InventoryOverlay
-from merchant_dialogue import DialogueChannel
 from scenes.battle_scene import BattleScene
 from scenes.boss_scene import BossScene
 from scenes.city_scene import CityScene
@@ -30,6 +29,7 @@ from scenes.start_scene import StartScene
 from scenes.wilderness_scene import FieldEnemy, WildernessScene
 from utils.assets import AssetManager
 from voice.service import VoiceEngine
+
 
 class GameApp:
     def __init__(self) -> None:
@@ -70,7 +70,14 @@ class GameApp:
         self._next_scene_key = scene_key
         self._next_scene_kwargs = kwargs
 
-    def start_battle(self, enemy, return_scene: str, field_enemy: Optional[FieldEnemy] = None, is_boss: bool = False, sprite_key: str = "skeleton") -> None:
+    def start_battle(
+        self,
+        enemy,
+        return_scene: str,
+        field_enemy: Optional[FieldEnemy] = None,
+        is_boss: bool = False,
+        sprite_key: str = "skeleton",
+    ) -> None:
         self.inventory_overlay.active = False
         self.change_scene(
             SCENE_BATTLE,
@@ -81,17 +88,22 @@ class GameApp:
             sprite_key=sprite_key,
         )
 
-    def end_battle(self, victory: bool, return_scene: str, field_enemy: Optional[FieldEnemy] = None) -> None:
+    def end_battle(
+        self, victory: bool, return_scene: str, field_enemy: Optional[FieldEnemy] = None
+    ) -> None:
         if victory:
             if field_enemy is not None:
                 wilderness = self.scenes.get(SCENE_WILDERNESS)
                 if isinstance(wilderness, WildernessScene):
                     field_enemy.reset(wilderness.bounds)
-            spawn = self.player.rect.center if self.player else (SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2)
+            spawn = (
+                self.player.rect.center
+                if self.player
+                else (SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2)
+            )
             self.change_scene(return_scene, spawn=spawn)
         else:
             self.change_scene(SCENE_GAME_OVER)
-
 
     def ensure_voice_engine(self) -> VoiceEngine:
         if self.voice_engine is None:
@@ -141,7 +153,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-
-
-
-

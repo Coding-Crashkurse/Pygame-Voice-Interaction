@@ -4,7 +4,7 @@ from typing import Dict, List, Optional
 
 import pygame
 
-from constants import GAME_TITLE, SCREEN_HEIGHT, SCREEN_WIDTH, SCENE_CITY
+from constants import GAME_TITLE, SCREEN_WIDTH, SCENE_CITY
 from entities.player import Player
 from scenes.base import BaseScene
 from ui.components import Button, OptionSelector, TextInput
@@ -21,10 +21,21 @@ class StartScene(BaseScene):
         self.title_font = pygame.font.SysFont("arial", 64)
         self.body_font = pygame.font.SysFont("arial", 28)
         self.small_font = pygame.font.SysFont("arial", 22)
-        self.input = TextInput(pygame.Rect(SCREEN_WIDTH // 2 - 240, 240, 480, 56), self.body_font, "Enter Name")
-        self.start_button = Button(pygame.Rect(SCREEN_WIDTH // 2 - 150, 540, 300, 70), "Begin Journey", self.body_font, self._start_game)
+        self.input = TextInput(
+            pygame.Rect(SCREEN_WIDTH // 2 - 240, 240, 480, 56),
+            self.body_font,
+            "Enter Name",
+        )
+        self.start_button = Button(
+            pygame.Rect(SCREEN_WIDTH // 2 - 150, 540, 300, 70),
+            "Begin Journey",
+            self.body_font,
+            self._start_game,
+        )
         selector_rect = pygame.Rect(40, 220, 260, 56)
-        self.voice_selector = OptionSelector(selector_rect, self.body_font, ["Buttons", "Voice"])
+        self.voice_selector = OptionSelector(
+            selector_rect, self.body_font, ["Buttons", "Voice"]
+        )
         self.focus_order: List[str] = ["input", "voice", "start"]
         self.focus_index = 0
         self.input.set_active(True)
@@ -92,7 +103,9 @@ class StartScene(BaseScene):
                         self._start_game()
             elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                 for class_name, data in self.class_cards.items():
-                    if data["card_rect"].collidepoint(event.pos) or data["image_rect"].collidepoint(event.pos):
+                    if data["card_rect"].collidepoint(event.pos) or data[
+                        "image_rect"
+                    ].collidepoint(event.pos):
                         self.selected_class = class_name
                         break
         self.input.handle_events(events)
@@ -128,8 +141,12 @@ class StartScene(BaseScene):
 
         label_name = self.body_font.render("Enter Name", True, pygame.Color("white"))
         surface.blit(label_name, (self.input.rect.left, self.input.rect.top - 42))
-        label_class = self.body_font.render("Choose Your Path", True, pygame.Color("white"))
-        surface.blit(label_class, (SCREEN_WIDTH // 2 - label_class.get_width() // 2, 340))
+        label_class = self.body_font.render(
+            "Choose Your Path", True, pygame.Color("white")
+        )
+        surface.blit(
+            label_class, (SCREEN_WIDTH // 2 - label_class.get_width() // 2, 340)
+        )
 
         for class_name, data in self.class_cards.items():
             selected = self.selected_class == class_name
@@ -138,13 +155,24 @@ class StartScene(BaseScene):
         self.input.render(surface)
         self.start_button.render(surface)
 
-        mode_label = self.small_font.render("Interaction Mode", True, pygame.Color("white"))
-        surface.blit(mode_label, (self.voice_selector.rect.left, self.voice_selector.rect.top - 32))
+        mode_label = self.small_font.render(
+            "Interaction Mode", True, pygame.Color("white")
+        )
+        surface.blit(
+            mode_label,
+            (self.voice_selector.rect.left, self.voice_selector.rect.top - 32),
+        )
         self.voice_selector.render(surface)
         self._draw_instructions(surface)
         self._draw_selection_hint(surface)
 
-    def _draw_class_card(self, surface: pygame.Surface, class_name: str, data: Dict[str, pygame.Rect | pygame.Surface], selected: bool) -> None:
+    def _draw_class_card(
+        self,
+        surface: pygame.Surface,
+        class_name: str,
+        data: Dict[str, pygame.Rect | pygame.Surface],
+        selected: bool,
+    ) -> None:
         card_rect: pygame.Rect = data["card_rect"]  # type: ignore[assignment]
         image_rect: pygame.Rect = data["image_rect"]  # type: ignore[assignment]
         image: pygame.Surface = data["image"]  # type: ignore[assignment]
@@ -156,15 +184,21 @@ class StartScene(BaseScene):
         label = self.small_font.render(class_name, True, pygame.Color("white"))
         label_rect = label.get_rect(midtop=(card_rect.centerx, card_rect.bottom - 30))
         surface.blit(label, label_rect)
-        prompt = self.small_font.render("Click to select", True, pygame.Color("#b0bec5"))
+        prompt = self.small_font.render(
+            "Click to select", True, pygame.Color("#b0bec5")
+        )
         prompt_rect = prompt.get_rect(midtop=(card_rect.centerx, label_rect.bottom + 4))
         surface.blit(prompt, prompt_rect)
 
     def _draw_selection_hint(self, surface: pygame.Surface) -> None:
         if not self.selected_class:
-            hint = self.small_font.render("Click a class card to choose", True, pygame.Color("#b0bec5"))
+            hint = self.small_font.render(
+                "Click a class card to choose", True, pygame.Color("#b0bec5")
+            )
         else:
-            hint = self.small_font.render(f"{self.selected_class} selected", True, pygame.Color("#c5e1a5"))
+            hint = self.small_font.render(
+                f"{self.selected_class} selected", True, pygame.Color("#c5e1a5")
+            )
         surface.blit(hint, (SCREEN_WIDTH // 2 - hint.get_width() // 2, 360))
 
     def _draw_instructions(self, surface: pygame.Surface) -> None:
@@ -176,23 +210,8 @@ class StartScene(BaseScene):
             text = self.small_font.render(line, True, color)
             surface.blit(text, (panel.left + 16, panel.top + 18 + index * 26))
 
+
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from main import GameApp
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

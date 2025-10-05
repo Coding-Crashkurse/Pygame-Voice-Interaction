@@ -1,8 +1,8 @@
-﻿from __future__ import annotations
+from __future__ import annotations
 
 import random
 from dataclasses import dataclass
-from typing import List, Sequence, Tuple
+from typing import Sequence
 
 import pygame
 
@@ -18,7 +18,15 @@ class EnemyAttack:
 
 
 class Enemy:
-    def __init__(self, name: str, max_hp: int, defense: int, attacks: Sequence[EnemyAttack], gold_reward: int, xp_reward: int) -> None:
+    def __init__(
+        self,
+        name: str,
+        max_hp: int,
+        defense: int,
+        attacks: Sequence[EnemyAttack],
+        gold_reward: int,
+        xp_reward: int,
+    ) -> None:
         self.name = name
         self.max_hp = max_hp
         self.hp = max_hp
@@ -91,7 +99,9 @@ def clone_enemy(template: Enemy) -> Enemy:
 class WanderBehaviour:
     """Controls simple wandering for field enemies."""
 
-    def __init__(self, rect: pygame.Rect, bounds: pygame.Rect, speed: float = 60.0) -> None:
+    def __init__(
+        self, rect: pygame.Rect, bounds: pygame.Rect, speed: float = 60.0
+    ) -> None:
         self.rect = rect
         self.bounds = bounds
         self.speed = speed
@@ -104,25 +114,31 @@ class WanderBehaviour:
         if self._direction_timer >= self._change_interval:
             self._direction_timer = 0.0
             self._change_interval = random.uniform(1.0, 2.0)
-            self.direction = random.choice([
-                pygame.Vector2(1, 0),
-                pygame.Vector2(-1, 0),
-                pygame.Vector2(0, 1),
-                pygame.Vector2(0, -1),
-                pygame.Vector2(0, 0),
-            ])
+            self.direction = random.choice(
+                [
+                    pygame.Vector2(1, 0),
+                    pygame.Vector2(-1, 0),
+                    pygame.Vector2(0, 1),
+                    pygame.Vector2(0, -1),
+                    pygame.Vector2(0, 0),
+                ]
+            )
 
         if self.direction.length_squared() == 0:
             return
 
         delta = self.direction * self.speed * dt
         new_rect = self.rect.move(delta.x, 0)
-        if self.bounds.contains(new_rect) and not any(new_rect.colliderect(obs) for obs in obstacles):
+        if self.bounds.contains(new_rect) and not any(
+            new_rect.colliderect(obs) for obs in obstacles
+        ):
             self.rect = new_rect
         else:
             self.direction.x *= -1
         new_rect = self.rect.move(0, delta.y)
-        if self.bounds.contains(new_rect) and not any(new_rect.colliderect(obs) for obs in obstacles):
+        if self.bounds.contains(new_rect) and not any(
+            new_rect.colliderect(obs) for obs in obstacles
+        ):
             self.rect = new_rect
         else:
             self.direction.y *= -1

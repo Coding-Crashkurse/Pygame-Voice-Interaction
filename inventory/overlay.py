@@ -1,4 +1,4 @@
-﻿from __future__ import annotations
+from __future__ import annotations
 
 from typing import List, Tuple
 
@@ -6,7 +6,6 @@ import pygame
 
 from constants import SCREEN_HEIGHT, SCREEN_WIDTH
 from entities.player import required_xp
-from inventory.items import POTIONS
 
 
 class InventoryOverlay:
@@ -33,10 +32,14 @@ class InventoryOverlay:
                     self.toggle()
                     return
                 if event.key in (pygame.K_RIGHT, pygame.K_d):
-                    self.section_index = (self.section_index + 1) % len(self.section_order)
+                    self.section_index = (self.section_index + 1) % len(
+                        self.section_order
+                    )
                     self.selection_index = 0
                 elif event.key in (pygame.K_LEFT, pygame.K_a):
-                    self.section_index = (self.section_index - 1) % len(self.section_order)
+                    self.section_index = (self.section_index - 1) % len(
+                        self.section_order
+                    )
                     self.selection_index = 0
                 elif event.key in (pygame.K_DOWN, pygame.K_s):
                     count = self._item_count_in_section()
@@ -99,12 +102,24 @@ class InventoryOverlay:
         pygame.draw.rect(surface, (120, 200, 255), panel_rect, 3, border_radius=12)
 
         player = self.app.player
-        header = self.font.render(f"{player.name} - Level {player.level}", True, pygame.Color("white"))
+        header = self.font.render(
+            f"{player.name} - Level {player.level}", True, pygame.Color("white")
+        )
         surface.blit(header, (panel_rect.left + 30, panel_rect.top + 20))
-        xp_text = self.small_font.render(f"XP: {player.xp} / {required_xp(player.level)}", True, pygame.Color("white"))
-        hp_text = self.small_font.render(f"HP: {player.hp}/{player.max_hp}", True, pygame.Color("white"))
-        mp_text = self.small_font.render(f"MP: {player.mp}/{player.max_mp}", True, pygame.Color("white"))
-        gold_text = self.small_font.render(f"Gold: {player.gold}", True, pygame.Color("white"))
+        xp_text = self.small_font.render(
+            f"XP: {player.xp} / {required_xp(player.level)}",
+            True,
+            pygame.Color("white"),
+        )
+        hp_text = self.small_font.render(
+            f"HP: {player.hp}/{player.max_hp}", True, pygame.Color("white")
+        )
+        mp_text = self.small_font.render(
+            f"MP: {player.mp}/{player.max_mp}", True, pygame.Color("white")
+        )
+        gold_text = self.small_font.render(
+            f"Gold: {player.gold}", True, pygame.Color("white")
+        )
         surface.blit(xp_text, (panel_rect.left + 30, panel_rect.top + 60))
         surface.blit(hp_text, (panel_rect.left + 30, panel_rect.top + 90))
         surface.blit(mp_text, (panel_rect.left + 30, panel_rect.top + 120))
@@ -125,14 +140,28 @@ class InventoryOverlay:
         surface.blit(eq_weapon_text, (panel_rect.left + 30, panel_rect.top + 180))
         surface.blit(eq_shield_text, (panel_rect.left + 30, panel_rect.top + 210))
 
-        instructions = self.small_font.render("Arrows: navigate | Enter: equip/use | Esc/I: back", True, pygame.Color("#b0bec5"))
+        instructions = self.small_font.render(
+            "Arrows: navigate | Enter: equip/use | Esc/I: back",
+            True,
+            pygame.Color("#b0bec5"),
+        )
         surface.blit(instructions, (panel_rect.left + 30, panel_rect.bottom - 50))
 
-        section_title = self.font.render(self.section_order[self.section_index], True, pygame.Color("#ffcc80"))
+        section_title = self.font.render(
+            self.section_order[self.section_index], True, pygame.Color("#ffcc80")
+        )
         title_y = panel_rect.top + 250
-        surface.blit(section_title, (panel_rect.centerx - section_title.get_width() // 2, title_y))
+        surface.blit(
+            section_title,
+            (panel_rect.centerx - section_title.get_width() // 2, title_y),
+        )
 
-        list_rect = pygame.Rect(panel_rect.left + 60, title_y + 45, panel_rect.width - 120, panel_rect.bottom - (title_y + 115))
+        list_rect = pygame.Rect(
+            panel_rect.left + 60,
+            title_y + 45,
+            panel_rect.width - 120,
+            panel_rect.bottom - (title_y + 115),
+        )
         items = self._items_for_section()
         for idx, (label, extra) in enumerate(items):
             is_selected = idx == self.selection_index
@@ -141,7 +170,13 @@ class InventoryOverlay:
             surface.blit(text, (list_rect.left, list_rect.top + idx * 30))
             if extra:
                 extra_text = self.small_font.render(extra, True, color)
-                surface.blit(extra_text, (list_rect.right - extra_text.get_width(), list_rect.top + idx * 30))
+                surface.blit(
+                    extra_text,
+                    (
+                        list_rect.right - extra_text.get_width(),
+                        list_rect.top + idx * 30,
+                    ),
+                )
 
     def _items_for_section(self) -> List[Tuple[str, str]]:
         player = self.app.player
@@ -164,7 +199,9 @@ class InventoryOverlay:
             return items
         items = []
         for potion, count in player.inventory.get_potions():
-            label = f"{potion.name} (+{potion.restore_amount} {potion.resource.upper()})"
+            label = (
+                f"{potion.name} (+{potion.restore_amount} {potion.resource.upper()})"
+            )
             extra = f"x{count}"
             items.append((label, extra))
         return items
@@ -174,5 +211,3 @@ from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from main import GameApp
-
-

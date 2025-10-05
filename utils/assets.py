@@ -1,4 +1,4 @@
-﻿from __future__ import annotations
+from __future__ import annotations
 
 from pathlib import Path
 from typing import Dict, Optional, Tuple
@@ -71,7 +71,9 @@ class AssetManager:
             else:
                 self._sound_cache[key] = None
 
-    def get_image(self, key: str, size: Optional[Tuple[int, int]] = None) -> pygame.Surface:
+    def get_image(
+        self, key: str, size: Optional[Tuple[int, int]] = None
+    ) -> pygame.Surface:
         if key not in self._image_cache:
             raise KeyError(f"Unknown sprite key: {key}")
         image = self._image_cache[key]

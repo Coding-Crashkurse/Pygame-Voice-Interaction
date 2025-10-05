@@ -1,4 +1,4 @@
-﻿from __future__ import annotations
+from __future__ import annotations
 
 from dataclasses import dataclass
 from typing import Dict, Tuple
@@ -76,7 +76,9 @@ class Player:
     def reset_position(self, pos: Tuple[int, int]) -> None:
         self.rect.topleft = pos
 
-    def handle_movement(self, dt: float, blocked_tiles: Tuple[pygame.Rect, ...]) -> bool:
+    def handle_movement(
+        self, dt: float, blocked_tiles: Tuple[pygame.Rect, ...]
+    ) -> bool:
         keys = pygame.key.get_pressed()
         self.velocity.update(0, 0)
         if keys[pygame.K_a] or keys[pygame.K_LEFT]:

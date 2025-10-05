@@ -25,7 +25,9 @@ class VoiceEngine:
     ) -> None:
         self._client = client or OpenAI()
         self._tts_model_name = os.getenv("TTS_MODEL", "legacy")
-        self._tts: TextToSpeechProvider = build_tts_provider(self._tts_model_name, self._client)
+        self._tts: TextToSpeechProvider = build_tts_provider(
+            self._tts_model_name, self._client
+        )
         self._recorder = recorder or MicrophoneRecorder()
         self._transcriber = SpeechToText(self._client)
         self._temp_dir = Path(tempfile.gettempdir()) / "pygame_ai_voice"

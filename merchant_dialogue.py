@@ -304,7 +304,7 @@ class VoiceChannel(DialogueChannel):
 
         self._state = "idle"
         self._status_text = "Press Space to talk"
-        print(f"[VoiceChannel] Task completed successfully")
+        print("[VoiceChannel] Task completed successfully")
         if result.transcript:
             print(f"[VoiceChannel] Logged transcript: {result.transcript!r}")
             self._append_log("You", result.transcript)

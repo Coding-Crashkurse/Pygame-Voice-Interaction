@@ -29,7 +29,12 @@ class MicrophoneRecorder:
             ) from exc
         return np, sd, sf
 
-    def record(self, destination: Path, duration: float, on_state_change: Callable[[str], None] | None = None) -> None:
+    def record(
+        self,
+        destination: Path,
+        duration: float,
+        on_state_change: Callable[[str], None] | None = None,
+    ) -> None:
         """Record audio synchronously for the provided duration (seconds)."""
         if duration <= 0:
             raise ValueError("duration must be positive")
@@ -45,7 +50,12 @@ class MicrophoneRecorder:
             if on_state_change:
                 on_state_change("recording")
             frames = int(duration * self.samplerate)
-            audio = sd.rec(frames, samplerate=self.samplerate, channels=self.channels, dtype="float32")
+            audio = sd.rec(
+                frames,
+                samplerate=self.samplerate,
+                channels=self.channels,
+                dtype="float32",
+            )
             sd.wait()
             if on_state_change:
                 on_state_change("saving")

@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import os
 from dataclasses import dataclass
-from typing import Callable, Iterable, Literal, Sequence, TypedDict
+from typing import Callable, Literal, Sequence, TypedDict
 
 from langchain.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_core.messages import AIMessage, BaseMessage, HumanMessage

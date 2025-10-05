@@ -1,10 +1,16 @@
-﻿from __future__ import annotations
+from __future__ import annotations
 
 from typing import List, Tuple
 
 import pygame
 
-from constants import SCREEN_HEIGHT, SCREEN_WIDTH, SCENE_SHOP, SCENE_WILDERNESS, TILE_SIZE
+from constants import (
+    SCREEN_HEIGHT,
+    SCREEN_WIDTH,
+    SCENE_SHOP,
+    SCENE_WILDERNESS,
+    TILE_SIZE,
+)
 from scenes.base import BaseScene
 from utils.helpers import build_blocking_rects
 
@@ -20,7 +26,9 @@ class CityScene(BaseScene):
         gate_center_row = self.rows // 2
         self.gate_top_row = max(1, gate_center_row - gate_height_tiles // 2)
         self.gate_bottom_row = self.gate_top_row + gate_height_tiles
-        self.gate_tiles = {(0, y) for y in range(self.gate_top_row, self.gate_bottom_row)}
+        self.gate_tiles = {
+            (0, y) for y in range(self.gate_top_row, self.gate_bottom_row)
+        }
         gate_center_y = (self.gate_top_row + self.gate_bottom_row) / 2 * TILE_SIZE
         self.player_spawn = (TILE_SIZE * 6, int(gate_center_y))
         self.left_exit_rect = pygame.Rect(
@@ -32,7 +40,9 @@ class CityScene(BaseScene):
         self.blocking_rects: List[pygame.Rect] = []
         self.decor_drawables: List[Tuple[pygame.Surface, pygame.Rect]] = []
         self.merchant_pos = (SCREEN_WIDTH // 2 + 240, SCREEN_HEIGHT // 2 - 30)
-        self.merchant_rect = pygame.Rect(self.merchant_pos[0], self.merchant_pos[1], 48, 64)
+        self.merchant_rect = pygame.Rect(
+            self.merchant_pos[0], self.merchant_pos[1], 48, 64
+        )
         self._footstep_timer = 0.0
         self._setup_environment()
 
@@ -174,8 +184,12 @@ class CityScene(BaseScene):
             surface.blit(image, draw_rect.topleft)
 
         gate_post = self.app.assets.get_image("door", (60, 120))
-        upper_rect = gate_post.get_rect(midleft=(TILE_SIZE, self.gate_top_row * TILE_SIZE + 40))
-        lower_rect = gate_post.get_rect(midleft=(TILE_SIZE, self.gate_bottom_row * TILE_SIZE - 40))
+        upper_rect = gate_post.get_rect(
+            midleft=(TILE_SIZE, self.gate_top_row * TILE_SIZE + 40)
+        )
+        lower_rect = gate_post.get_rect(
+            midleft=(TILE_SIZE, self.gate_bottom_row * TILE_SIZE - 40)
+        )
         surface.blit(gate_post, upper_rect.topleft)
         surface.blit(gate_post, lower_rect.topleft)
 
@@ -184,34 +198,55 @@ class CityScene(BaseScene):
             self._draw_merchant_glow(surface)
 
         merchant_img = self.app.assets.get_image("merchant", (64, 96))
-        merchant_draw_rect = merchant_img.get_rect(midbottom=self.merchant_rect.midbottom)
+        merchant_draw_rect = merchant_img.get_rect(
+            midbottom=self.merchant_rect.midbottom
+        )
         surface.blit(merchant_img, merchant_draw_rect.topleft)
 
-        player_sprite_key = "warrior" if self.app.player.player_class == "Fighter" else "sorcerer"
+        player_sprite_key = (
+            "warrior" if self.app.player.player_class == "Fighter" else "sorcerer"
+        )
         player_img = self.app.assets.get_image(player_sprite_key, (64, 96))
         player_draw_rect = player_img.get_rect(midbottom=self.app.player.rect.midbottom)
         surface.blit(player_img, player_draw_rect.topleft)
 
-        hud_text = self.font.render(f"Gold: {self.app.player.gold}", True, pygame.Color("white"))
+        hud_text = self.font.render(
+            f"Gold: {self.app.player.gold}", True, pygame.Color("white")
+        )
         hud_rect = hud_text.get_rect(topleft=(24, SCREEN_HEIGHT - 56))
-        badge = pygame.Surface((hud_rect.width + 20, hud_rect.height + 12), pygame.SRCALPHA)
+        badge = pygame.Surface(
+            (hud_rect.width + 20, hud_rect.height + 12), pygame.SRCALPHA
+        )
         badge.fill((0, 0, 0, 150))
         surface.blit(badge, (hud_rect.left - 10, hud_rect.top - 6))
         surface.blit(hud_text, hud_rect.topleft)
 
         if near_merchant:
             prompt = self.font.render("Press E to Trade", True, pygame.Color("#ffeb3b"))
-            surface.blit(prompt, (self.merchant_rect.left - 40, self.merchant_rect.top - 32))
+            surface.blit(
+                prompt, (self.merchant_rect.left - 40, self.merchant_rect.top - 32)
+            )
 
         self.app.inventory_overlay.render(surface)
 
     def _draw_merchant_glow(self, surface: pygame.Surface) -> None:
         glow_radius = 90
-        glow_surface = pygame.Surface((glow_radius * 2, glow_radius * 2), pygame.SRCALPHA)
-        pygame.draw.circle(glow_surface, (255, 240, 120, 110), (glow_radius, glow_radius), glow_radius)
-        pygame.draw.circle(glow_surface, (255, 255, 200, 180), (glow_radius, glow_radius), glow_radius // 2)
+        glow_surface = pygame.Surface(
+            (glow_radius * 2, glow_radius * 2), pygame.SRCALPHA
+        )
+        pygame.draw.circle(
+            glow_surface, (255, 240, 120, 110), (glow_radius, glow_radius), glow_radius
+        )
+        pygame.draw.circle(
+            glow_surface,
+            (255, 255, 200, 180),
+            (glow_radius, glow_radius),
+            glow_radius // 2,
+        )
         glow_rect = glow_surface.get_rect(center=self.merchant_rect.center)
-        surface.blit(glow_surface, glow_rect.topleft, special_flags=pygame.BLEND_RGBA_ADD)
+        surface.blit(
+            glow_surface, glow_rect.topleft, special_flags=pygame.BLEND_RGBA_ADD
+        )
 
     def _draw_ground(self, surface: pygame.Surface) -> None:
         wall_tile = self.app.assets.get_image("wall", (TILE_SIZE, TILE_SIZE))
@@ -223,7 +258,12 @@ class CityScene(BaseScene):
                 surface.blit(wall_tile, (0, y * TILE_SIZE))
             surface.blit(wall_tile, ((self.cols - 1) * TILE_SIZE, y * TILE_SIZE))
 
-        inner_rect = pygame.Rect(TILE_SIZE, TILE_SIZE, SCREEN_WIDTH - 2 * TILE_SIZE, SCREEN_HEIGHT - 2 * TILE_SIZE)
+        inner_rect = pygame.Rect(
+            TILE_SIZE,
+            TILE_SIZE,
+            SCREEN_WIDTH - 2 * TILE_SIZE,
+            SCREEN_HEIGHT - 2 * TILE_SIZE,
+        )
         pygame.draw.rect(surface, (44, 110, 70), inner_rect)
 
         gate_path_rect = pygame.Rect(
@@ -234,7 +274,9 @@ class CityScene(BaseScene):
         )
         pygame.draw.rect(surface, (94, 74, 42), gate_path_rect)
 
-        plaza_rect = pygame.Rect(TILE_SIZE * 6, TILE_SIZE * 7, TILE_SIZE * 20, TILE_SIZE * 8)
+        plaza_rect = pygame.Rect(
+            TILE_SIZE * 6, TILE_SIZE * 7, TILE_SIZE * 20, TILE_SIZE * 8
+        )
         pygame.draw.rect(surface, (52, 130, 90), plaza_rect)
 
 
@@ -242,19 +284,3 @@ from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from main import GameApp
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

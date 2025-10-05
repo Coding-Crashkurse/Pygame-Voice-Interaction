@@ -1,4 +1,4 @@
-﻿from __future__ import annotations
+from __future__ import annotations
 
 import pygame
 
@@ -12,7 +12,9 @@ class BossScene(BaseScene):
         super().__init__(app)
         self.font = pygame.font.SysFont("arial", 24)
         self.warning_font = pygame.font.SysFont("arial", 28, bold=True)
-        self.boss_rect = pygame.Rect(SCREEN_WIDTH // 2 - 40, SCREEN_HEIGHT // 2 - 120, 80, 120)
+        self.boss_rect = pygame.Rect(
+            SCREEN_WIDTH // 2 - 40, SCREEN_HEIGHT // 2 - 120, 80, 120
+        )
         self.bounds = pygame.Rect(120, 120, SCREEN_WIDTH - 240, SCREEN_HEIGHT - 240)
         self._footstep_timer = 0.0
 
@@ -53,7 +55,12 @@ class BossScene(BaseScene):
             player.rect.right = self.bounds.right
 
         if player.rect.colliderect(self.boss_rect):
-            self.app.start_battle(clone_enemy(BOSS_TEMPLATE), return_scene=SCENE_WILDERNESS, is_boss=True, sprite_key="boss")
+            self.app.start_battle(
+                clone_enemy(BOSS_TEMPLATE),
+                return_scene=SCENE_WILDERNESS,
+                is_boss=True,
+                sprite_key="boss",
+            )
 
         if player.rect.left <= 0:
             spawn = (SCREEN_WIDTH - 100, player.rect.centery)
@@ -75,19 +82,29 @@ class BossScene(BaseScene):
         statue_img = self.app.assets.get_image("forge", (200, 200))
         surface.blit(statue_img, (self.bounds.centerx - 100, self.bounds.top - 220))
 
-        player_sprite_key = "warrior" if self.app.player.player_class == "Fighter" else "sorcerer"
+        player_sprite_key = (
+            "warrior" if self.app.player.player_class == "Fighter" else "sorcerer"
+        )
         player_img = self.app.assets.get_image(player_sprite_key, (64, 96))
         player_draw_rect = player_img.get_rect(midbottom=self.app.player.rect.midbottom)
         surface.blit(player_img, player_draw_rect.topleft)
 
-        hud_text = self.font.render(f"Gold: {self.app.player.gold}", True, pygame.Color("white"))
+        hud_text = self.font.render(
+            f"Gold: {self.app.player.gold}", True, pygame.Color("white")
+        )
         hud_rect = hud_text.get_rect(topleft=(24, SCREEN_HEIGHT - 56))
-        badge = pygame.Surface((hud_rect.width + 20, hud_rect.height + 12), pygame.SRCALPHA)
+        badge = pygame.Surface(
+            (hud_rect.width + 20, hud_rect.height + 12), pygame.SRCALPHA
+        )
         badge.fill((0, 0, 0, 170))
         surface.blit(badge, (hud_rect.left - 10, hud_rect.top - 6))
         surface.blit(hud_text, hud_rect.topleft)
-        warning = self.warning_font.render("You feel undergeared...", True, pygame.Color("#ffab40"))
-        surface.blit(warning, (self.bounds.left + 40, self.bounds.top + self.bounds.height + 10))
+        warning = self.warning_font.render(
+            "You feel undergeared...", True, pygame.Color("#ffab40")
+        )
+        surface.blit(
+            warning, (self.bounds.left + 40, self.bounds.top + self.bounds.height + 10)
+        )
 
         self.app.inventory_overlay.render(surface)
 
@@ -96,4 +113,3 @@ from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from main import GameApp
-

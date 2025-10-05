@@ -1,4 +1,4 @@
-﻿from __future__ import annotations
+from __future__ import annotations
 
 from typing import Dict, List, Optional, Tuple
 
@@ -35,13 +35,19 @@ class InventoryManager:
         return POTIONS[name]
 
     def get_owned_weapons(self) -> List[Tuple[Weapon, int]]:
-        return [(WEAPONS[name], count) for name, count in self.weapons.items() if count > 0]
+        return [
+            (WEAPONS[name], count) for name, count in self.weapons.items() if count > 0
+        ]
 
     def get_owned_shields(self) -> List[Tuple[Shield, int]]:
-        return [(SHIELDS[name], count) for name, count in self.shields.items() if count > 0]
+        return [
+            (SHIELDS[name], count) for name, count in self.shields.items() if count > 0
+        ]
 
     def get_potions(self) -> List[Tuple[Potion, int]]:
-        return [(POTIONS[name], count) for name, count in self.potions.items() if count > 0]
+        return [
+            (POTIONS[name], count) for name, count in self.potions.items() if count > 0
+        ]
 
     def equip_weapon(self, name: str) -> None:
         if self.weapons.get(name, 0) <= 0:

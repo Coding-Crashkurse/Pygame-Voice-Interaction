@@ -1,4 +1,4 @@
-﻿from __future__ import annotations
+from __future__ import annotations
 
 import random
 from dataclasses import dataclass
@@ -6,8 +6,20 @@ from typing import List
 
 import pygame
 
-from constants import SCREEN_HEIGHT, SCREEN_WIDTH, SCENE_BATTLE, SCENE_BOSS, SCENE_CITY, SCENE_WILDERNESS, TILE_SIZE
-from entities.enemies import BLOB_TEMPLATE, SKELETON_TEMPLATE, WanderBehaviour, clone_enemy
+from constants import (
+    SCREEN_HEIGHT,
+    SCREEN_WIDTH,
+    SCENE_BOSS,
+    SCENE_CITY,
+    SCENE_WILDERNESS,
+    TILE_SIZE,
+)
+from entities.enemies import (
+    BLOB_TEMPLATE,
+    SKELETON_TEMPLATE,
+    WanderBehaviour,
+    clone_enemy,
+)
 from scenes.base import BaseScene
 
 
@@ -34,7 +46,9 @@ class WildernessScene(BaseScene):
         self.font = pygame.font.SysFont("arial", 24)
         self.bounds = pygame.Rect(80, 80, SCREEN_WIDTH - 160, SCREEN_HEIGHT - 200)
         self.left_exit = pygame.Rect(0, self.bounds.top, TILE_SIZE, self.bounds.height)
-        self.right_exit = pygame.Rect(SCREEN_WIDTH - TILE_SIZE, self.bounds.top, TILE_SIZE, self.bounds.height)
+        self.right_exit = pygame.Rect(
+            SCREEN_WIDTH - TILE_SIZE, self.bounds.top, TILE_SIZE, self.bounds.height
+        )
         self.obstacles: List[pygame.Rect] = self._create_obstacles()
         self.enemies: List[FieldEnemy] = self._create_enemies()
         self._footstep_timer = 0.0
@@ -42,7 +56,13 @@ class WildernessScene(BaseScene):
     def _create_obstacles(self) -> List[pygame.Rect]:
         obstacles: List[pygame.Rect] = []
         tree_positions = [
-            (220, 200), (260, 420), (350, 260), (600, 180), (920, 300), (980, 460), (760, 360)
+            (220, 200),
+            (260, 420),
+            (350, 260),
+            (600, 180),
+            (920, 300),
+            (980, 460),
+            (760, 360),
         ]
         rock_positions = [(440, 360), (560, 260), (820, 220)]
         bush_positions = [(320, 500), (880, 440), (1040, 360)]
@@ -109,9 +129,18 @@ class WildernessScene(BaseScene):
                 continue
             enemy.behaviour.update(dt, self.obstacles)
             if enemy.rect.colliderect(self.app.player.rect):
-                template = SKELETON_TEMPLATE if enemy.template_key == "skeleton" else BLOB_TEMPLATE
+                template = (
+                    SKELETON_TEMPLATE
+                    if enemy.template_key == "skeleton"
+                    else BLOB_TEMPLATE
+                )
                 sprite_key = "skeleton" if enemy.template_key == "skeleton" else "blob"
-                self.app.start_battle(clone_enemy(template), return_scene=SCENE_WILDERNESS, field_enemy=enemy, sprite_key=sprite_key)
+                self.app.start_battle(
+                    clone_enemy(template),
+                    return_scene=SCENE_WILDERNESS,
+                    field_enemy=enemy,
+                    sprite_key=sprite_key,
+                )
                 enemy.respawn_timer = 2.5
                 break
 
@@ -143,14 +172,20 @@ class WildernessScene(BaseScene):
             enemy_draw = sprite_img.get_rect(midbottom=enemy.rect.midbottom)
             surface.blit(sprite_img, enemy_draw.topleft)
 
-        player_sprite_key = "warrior" if self.app.player.player_class == "Fighter" else "sorcerer"
+        player_sprite_key = (
+            "warrior" if self.app.player.player_class == "Fighter" else "sorcerer"
+        )
         player_img = self.app.assets.get_image(player_sprite_key, (64, 96))
         player_draw_rect = player_img.get_rect(midbottom=self.app.player.rect.midbottom)
         surface.blit(player_img, player_draw_rect.topleft)
 
-        hud_text = self.font.render(f"Gold: {self.app.player.gold}", True, pygame.Color("white"))
+        hud_text = self.font.render(
+            f"Gold: {self.app.player.gold}", True, pygame.Color("white")
+        )
         hud_rect = hud_text.get_rect(topleft=(24, SCREEN_HEIGHT - 56))
-        badge = pygame.Surface((hud_rect.width + 20, hud_rect.height + 12), pygame.SRCALPHA)
+        badge = pygame.Surface(
+            (hud_rect.width + 20, hud_rect.height + 12), pygame.SRCALPHA
+        )
         badge.fill((0, 0, 0, 150))
         surface.blit(badge, (hud_rect.left - 10, hud_rect.top - 6))
         surface.blit(hud_text, hud_rect.topleft)
@@ -162,4 +197,3 @@ from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from main import GameApp
-

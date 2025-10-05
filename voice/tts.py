@@ -56,7 +56,9 @@ class ElevenLabsTTS(TextToSpeechProvider):
             )
 
         if ElevenLabs is None:
-            raise ImportError("The 'elevenlabs' package is required for ElevenLabs TTS support.")
+            raise ImportError(
+                "The 'elevenlabs' package is required for ElevenLabs TTS support."
+            )
 
         self._model_id = os.getenv("ELEVENLABS_MODEL_ID", "eleven_multilingual_v2")
         self._output_format = os.getenv("ELEVENLABS_OUTPUT_FORMAT", "mp3_44100_128")

@@ -1,7 +1,7 @@
-﻿from __future__ import annotations
+from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Callable, List, Optional, Sequence
+from typing import Callable, List, Sequence
 
 import pygame
 
@@ -47,7 +47,9 @@ class Button:
 
 
 class TextInput:
-    def __init__(self, rect: pygame.Rect, font: pygame.font.Font, placeholder: str = "") -> None:
+    def __init__(
+        self, rect: pygame.Rect, font: pygame.font.Font, placeholder: str = ""
+    ) -> None:
         self.rect = rect
         self.font = font
         self.placeholder = placeholder
@@ -91,17 +93,23 @@ class TextInput:
         display_text = self.text or self.placeholder
         text_color = Color("white") if self.text else Color("#9e9e9e")
         text_surface = self.font.render(display_text, True, text_color)
-        text_rect = text_surface.get_rect(left=self.rect.left + 10, centery=self.rect.centery)
+        text_rect = text_surface.get_rect(
+            left=self.rect.left + 10, centery=self.rect.centery
+        )
         surface.blit(text_surface, text_rect)
 
         if self.is_active and self.caret_visible:
             caret_x = text_rect.right + 3
-            caret_rect = pygame.Rect(caret_x, self.rect.top + 5, 2, self.rect.height - 10)
+            caret_rect = pygame.Rect(
+                caret_x, self.rect.top + 5, 2, self.rect.height - 10
+            )
             pygame.draw.rect(surface, Color("white"), caret_rect)
 
 
 class OptionSelector:
-    def __init__(self, rect: pygame.Rect, font: pygame.font.Font, options: Sequence[str]) -> None:
+    def __init__(
+        self, rect: pygame.Rect, font: pygame.font.Font, options: Sequence[str]
+    ) -> None:
         if not options:
             raise ValueError("OptionSelector requires at least one option")
         self.rect = rect
