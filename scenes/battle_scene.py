@@ -1,13 +1,17 @@
 from __future__ import annotations
 
 import math
-from typing import List
+from typing import TYPE_CHECKING, Dict, List
 
 import pygame
 
 from constants import SCREEN_HEIGHT, SCREEN_WIDTH
 from scenes.base import BaseScene
 from utils.config import ATTACK_ANIMATION_SECONDS
+
+
+if TYPE_CHECKING:
+    from main import GameApp
 
 
 class BattleScene(BaseScene):
@@ -30,7 +34,7 @@ class BattleScene(BaseScene):
         self.attack_anim_duration = max(0.05, ATTACK_ANIMATION_SECONDS)
         self.animation_phase: str | None = None
         self.animation_timer: float = 0.0
-        self.animation_payload: dict | None = None
+        self.animation_payload: Dict | None = None
 
     def on_enter(self, **kwargs) -> None:
         enemy = kwargs.get("enemy")
@@ -159,30 +163,29 @@ class BattleScene(BaseScene):
         sfx_key = "heavy_hit" if self.enemy_sprite_key != "blob" else "slime_hit"
         self.app.assets.play_sound(sfx_key, volume=0.5)
 
-
-def _player_use_heal_potion(self) -> None:
-    if self.state != "player" or self.animation_phase is not None:
-        return
-    player = self.app.player
-    if player.hp >= player.max_hp:
-        self.app.assets.play_sound("error", volume=0.4)
-        self._push_log("HP is already full!")
-        return
-    heal_potions = player.inventory.potions.get("Heal Potion", 0)
-    if heal_potions <= 0:
-        self.app.assets.play_sound("error", volume=0.4)
-        self._push_log("No Heal Potions left!")
-        return
-    potion = player.inventory.consume_potion("Heal Potion")
-    before = player.hp
-    player.heal(potion.restore_amount)
-    restored = player.hp - before
-    self.app.assets.play_sound("drink", volume=0.6)
-    self._push_log(f"{player.name} uses {potion.name}! Restored {restored} HP.")
-    self.animation_phase = "enemy"
-    self.animation_payload = self._prepare_enemy_attack()
-    self.animation_timer = self.attack_anim_duration
-    self.state = "anim"
+    def _player_use_heal_potion(self) -> None:
+        if self.state != "player" or self.animation_phase is not None:
+            return
+        player = self.app.player
+        if player.hp >= player.max_hp:
+            self.app.assets.play_sound("error", volume=0.4)
+            self._push_log("HP is already full!")
+            return
+        heal_potions = player.inventory.potions.get("Heal Potion", 0)
+        if heal_potions <= 0:
+            self.app.assets.play_sound("error", volume=0.4)
+            self._push_log("No Heal Potions left!")
+            return
+        potion = player.inventory.consume_potion("Heal Potion")
+        before = player.hp
+        player.heal(potion.restore_amount)
+        restored = player.hp - before
+        self.app.assets.play_sound("drink", volume=0.6)
+        self._push_log(f"{player.name} uses {potion.name}! Restored {restored} HP.")
+        self.animation_phase = "enemy"
+        self.animation_payload = self._prepare_enemy_attack()
+        self.animation_timer = self.attack_anim_duration
+        self.state = "anim"
 
     def _prepare_enemy_attack(self) -> dict:
         attack = self.enemy.choose_attack()
@@ -288,10 +291,10 @@ def _player_use_heal_potion(self) -> None:
         if progress < 0.6:
             return
         intensity = min(180, int(255 * (progress - 0.6) / 0.4))
-        flash_surface = pygame.Surface((120, 120), pygame.SRCALPHA)
-        flash_surface.fill((255, 255, 255, intensity))
         target_rect = enemy_rect if self.animation_phase == "player" else player_rect
-        flash_rect = flash_surface.get_rect(center=target_rect.center)
+        flash_rect = target_rect.inflate(20, 20)
+        flash_surface = pygame.Surface(flash_rect.size, pygame.SRCALPHA)
+        flash_surface.fill((255, 255, 255, intensity))
         surface.blit(flash_surface, flash_rect.topleft)
 
     def _draw_status_panels(
@@ -463,71 +466,62 @@ def _player_use_heal_potion(self) -> None:
         label_text = self.small_font.render(label, True, pygame.Color("#b0bec5"))
         surface.blit(label_text, (x, y - 24))
 
+    def _draw_action_panel(self, surface: pygame.Surface) -> None:
+        panel = pygame.Rect(0, SCREEN_HEIGHT - 160, SCREEN_WIDTH, 160)
+        pygame.draw.rect(surface, (15, 15, 30), panel)
+        pygame.draw.rect(surface, (100, 120, 200), panel, 3)
 
-def _draw_action_panel(self, surface: pygame.Surface) -> None:
-    panel = pygame.Rect(0, SCREEN_HEIGHT - 160, SCREEN_WIDTH, 160)
-    pygame.draw.rect(surface, (15, 15, 30), panel)
-    pygame.draw.rect(surface, (100, 120, 200), panel, 3)
+        button_width, button_height = 200, 60
+        spacing = 24
+        total = button_width * 2 + spacing
+        button_top = panel.top + 48
+        start_x = panel.centerx - total // 2
 
-    button_width, button_height = 200, 60
-    spacing = 24
-    total = button_width * 2 + spacing
-    button_top = panel.top + 48
-    start_x = panel.centerx - total // 2
-
-    heal_rect = pygame.Rect(start_x, button_top, button_width, button_height)
-    attack_rect = pygame.Rect(
-        start_x + button_width + spacing, button_top, button_width, button_height
-    )
-    self.player_heal_rect = heal_rect
-    self.player_action_rect = attack_rect
-
-    player_turn = self.state == "player" and self.animation_phase is None
-
-    # Heal button
-    player = self.app.player
-    heal_count = player.inventory.potions.get("Heal Potion", 0)
-    can_heal = player_turn and heal_count > 0 and player.hp < player.max_hp
-    heal_color = (80, 150, 90) if can_heal else (50, 50, 70)
-    pygame.draw.rect(surface, heal_color, heal_rect, border_radius=8)
-    pygame.draw.rect(
-        surface,
-        (220, 240, 220) if can_heal else (120, 120, 140),
-        heal_rect,
-        2,
-        border_radius=8,
-    )
-    heal_label = "Heal"
-    if heal_count:
-        heal_label = f"Heal x{heal_count}"
-    heal_text = self.small_font.render(heal_label, True, pygame.Color("white"))
-    surface.blit(heal_text, heal_text.get_rect(center=heal_rect.center))
-
-    # Attack button
-    attack_color = (60, 100, 200) if player_turn else (50, 50, 70)
-    pygame.draw.rect(surface, attack_color, attack_rect, border_radius=8)
-    pygame.draw.rect(surface, (230, 230, 255), attack_rect, 2, border_radius=8)
-    attack_text = self.font.render("Attack", True, pygame.Color("white"))
-    surface.blit(attack_text, attack_text.get_rect(center=attack_rect.center))
-
-    for idx, line in enumerate(reversed(self.log)):
-        text_surface = self.small_font.render(line, True, pygame.Color("#eeeeee"))
-        surface.blit(
-            text_surface, (attack_rect.right + 40, SCREEN_HEIGHT - 140 + idx * 28)
+        heal_rect = pygame.Rect(start_x, button_top, button_width, button_height)
+        attack_rect = pygame.Rect(
+            start_x + button_width + spacing, button_top, button_width, button_height
         )
+        self.player_heal_rect = heal_rect
+        self.player_action_rect = attack_rect
 
-    if self.state == "victory":
-        prompt = "Press Enter to continue"
-    elif player_turn:
-        extra = " | H to Heal" if heal_count > 0 else ""
-        prompt = f"Press Enter/Click to Attack{extra}"
-    else:
-        prompt = "Battling..."
-    prompt_text = self.small_font.render(prompt, True, pygame.Color("#b0bec5"))
-    surface.blit(prompt_text, (panel.left + 40, panel.top + 110))
+        player_turn = self.state == "player" and self.animation_phase is None
 
+        player = self.app.player
+        heal_count = player.inventory.potions.get("Heal Potion", 0)
+        can_heal = player_turn and heal_count > 0 and player.hp < player.max_hp
+        heal_color = (80, 150, 90) if can_heal else (50, 50, 70)
+        pygame.draw.rect(surface, heal_color, heal_rect, border_radius=8)
+        pygame.draw.rect(
+            surface,
+            (220, 240, 220) if can_heal else (120, 120, 140),
+            heal_rect,
+            2,
+            border_radius=8,
+        )
+        heal_label = "Heal"
+        if heal_count:
+            heal_label = f"Heal x{heal_count}"
+        heal_text = self.small_font.render(heal_label, True, pygame.Color("white"))
+        surface.blit(heal_text, heal_text.get_rect(center=heal_rect.center))
 
-from typing import TYPE_CHECKING
+        attack_color = (60, 100, 200) if player_turn else (50, 50, 70)
+        pygame.draw.rect(surface, attack_color, attack_rect, border_radius=8)
+        pygame.draw.rect(surface, (230, 230, 255), attack_rect, 2, border_radius=8)
+        attack_text = self.font.render("Attack", True, pygame.Color("white"))
+        surface.blit(attack_text, attack_text.get_rect(center=attack_rect.center))
 
-if TYPE_CHECKING:
-    from main import GameApp
+        for idx, line in enumerate(reversed(self.log)):
+            text_surface = self.small_font.render(line, True, pygame.Color("#eeeeee"))
+            surface.blit(
+                text_surface, (attack_rect.right + 40, SCREEN_HEIGHT - 140 + idx * 28)
+            )
+
+        if self.state == "victory":
+            prompt = "Press Enter to continue"
+        elif player_turn:
+            extra = " | H to Heal" if heal_count > 0 else ""
+            prompt = f"Press Enter/Click to Attack{extra}"
+        else:
+            prompt = "Battling..."
+        prompt_text = self.small_font.render(prompt, True, pygame.Color("#b0bec5"))
+        surface.blit(prompt_text, (panel.left + 40, panel.top + 110))

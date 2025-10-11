@@ -1,8 +1,12 @@
 from __future__ import annotations
 
-from typing import Optional, Sequence
+from typing import TYPE_CHECKING, Optional, Sequence
 
 import pygame
+
+
+if TYPE_CHECKING:
+    from main import GameApp
 
 
 class BaseScene:
@@ -23,9 +27,3 @@ class BaseScene:
 
     def render(self, surface: pygame.Surface) -> None:
         raise NotImplementedError
-
-
-from typing import TYPE_CHECKING
-
-if TYPE_CHECKING:
-    from main import GameApp

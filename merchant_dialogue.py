@@ -8,12 +8,16 @@ from collections import deque
 from concurrent.futures import Future, ThreadPoolExecutor
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Deque, Sequence
+from typing import TYPE_CHECKING, Deque, Sequence
 
 import pygame
 
 from voice.assistant import AssistantResult, MerchantVoiceAssistant, PurchaseOutcome
 from voice.service import RecordingError, VoiceEngine
+
+
+if TYPE_CHECKING:
+    from scenes.shop_scene import ShopScene
 
 VOICE_RECORD_SECONDS = 4.0
 
@@ -481,9 +485,3 @@ def create_channel(
             raise ValueError("Voice channel requires a scene reference")
         return VoiceChannel(scene, render_callback, input_callback)
     raise ValueError(f"Unknown channel kind: {kind}")
-
-
-from typing import TYPE_CHECKING
-
-if TYPE_CHECKING:
-    from scenes.shop_scene import ShopScene

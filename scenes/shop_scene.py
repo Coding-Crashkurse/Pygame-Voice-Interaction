@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import List
+from typing import TYPE_CHECKING, List
 
 import pygame
 from difflib import get_close_matches
@@ -11,6 +11,10 @@ from merchant_dialogue import VoiceChannel, create_channel
 from voice.assistant import PurchaseOutcome
 from scenes.base import BaseScene
 from ui.components import Button
+
+
+if TYPE_CHECKING:
+    from main import GameApp
 
 
 class ShopScene(BaseScene):
@@ -28,56 +32,57 @@ class ShopScene(BaseScene):
         self.scroll_offset = 0.0
 
     def _build_items(self):
-        return [
-            {
-                "name": "Short Sword",
-                "type": "weapon",
-                "price": WEAPONS["Short Sword"].price,
-                "sprite": "short_sword",
-                "stock_key": None,
-                "bonus": "+6 ATK",
-            },
-            {
-                "name": "Steel Sword",
-                "type": "weapon",
-                "price": WEAPONS["Steel Sword"].price,
-                "sprite": "steel_sword",
-                "stock_key": None,
-                "bonus": "+12 ATK",
-            },
-            {
-                "name": "Wooden Shield",
-                "type": "shield",
-                "price": SHIELDS["Wooden Shield"].price,
-                "sprite": "wooden_shield",
-                "stock_key": None,
-                "bonus": "+2 DEF",
-            },
-            {
-                "name": "Iron Shield",
-                "type": "shield",
-                "price": SHIELDS["Iron Shield"].price,
-                "sprite": "iron_shield",
-                "stock_key": None,
-                "bonus": "+5 DEF",
-            },
-            {
-                "name": "Heal Potion",
-                "type": "potion",
-                "price": POTIONS["Heal Potion"].price,
-                "sprite": "heal_potion",
-                "stock_key": "Heal Potion",
-                "bonus": "Restores 40 HP",
-            },
-            {
-                "name": "Mana Potion",
-                "type": "potion",
-                "price": POTIONS["Mana Potion"].price,
-                "sprite": "mana_potion",
-                "stock_key": None,
-                "bonus": "Restores 40 MP",
-            },
-        ]
+        items: list[dict] = []
+
+        for name, weapon in WEAPONS.items():
+            sprite = "short_sword" if name == "Short Sword" else "steel_sword"
+            benefit = f"It lets you strike {weapon.attack_bonus} points harder, so creatures in the wilderness fall faster."
+            items.append(
+                {
+                    "name": name,
+                    "type": "weapon",
+                    "price": weapon.price,
+                    "sprite": sprite,
+                    "stock_key": None,
+                    "bonus": f"+{weapon.attack_bonus} ATK",
+                    "voice_benefit": benefit,
+                }
+            )
+
+        for name, shield in SHIELDS.items():
+            sprite = "wooden_shield" if name == "Wooden Shield" else "iron_shield"
+            benefit = f"It gives you {shield.defense_bonus} extra protection, keeping blows from the forest monsters at bay."
+            items.append(
+                {
+                    "name": name,
+                    "type": "shield",
+                    "price": shield.price,
+                    "sprite": sprite,
+                    "stock_key": None,
+                    "bonus": f"+{shield.defense_bonus} DEF",
+                    "voice_benefit": benefit,
+                }
+            )
+
+        for name, potion in POTIONS.items():
+            sprite = "heal_potion" if potion.resource == "hp" else "mana_potion"
+            if potion.resource == "hp":
+                benefit = f"It restores {potion.restore_amount} health, perfect for patching yourself up before the next fight."
+            else:
+                benefit = f"It restores {potion.restore_amount} mana so your spells keep flowing through the long forest trek."
+            items.append(
+                {
+                    "name": name,
+                    "type": "potion",
+                    "price": potion.price,
+                    "sprite": sprite,
+                    "stock_key": name if potion.resource == "hp" else None,
+                    "bonus": f"Restores {potion.restore_amount} {potion.resource.upper()}",
+                    "voice_benefit": benefit,
+                }
+            )
+
+        return items
 
     def on_enter(self, **kwargs) -> None:
         self.scroll_offset = 0.0
@@ -153,7 +158,7 @@ class ShopScene(BaseScene):
     def _purchase(self, index: int) -> None:
         item = self.items[index]
         outcome = self._attempt_purchase(item)
-        self.feedback = outcome.message
+        self.feedback = "" if outcome.success else outcome.message
 
     def _attempt_purchase(self, item: dict) -> PurchaseOutcome:
         player = self.app.player
@@ -188,9 +193,11 @@ class ShopScene(BaseScene):
             self.app.merchant_stock[stock_key] = max(0, (remaining or 0) - 1)
 
         self.app.assets.play_sound("gold", volume=0.6)
-        return PurchaseOutcome(
-            True, item["name"], f"Bought {item['name']} for {price}g.", price
-        )
+        benefit = item.get("voice_benefit", "")
+        summary = f"You bought the {item['name']} for {price} gold."
+        if benefit:
+            summary = f"{summary} {benefit}"
+        return PurchaseOutcome(True, item["name"], summary, price)
 
     def attempt_voice_purchase(self, raw_item_name: str | None) -> PurchaseOutcome:
         if not raw_item_name or not raw_item_name.strip():
@@ -206,7 +213,7 @@ class ShopScene(BaseScene):
             )
         _index, item = match
         outcome = self._attempt_purchase(item)
-        self.feedback = outcome.message
+        self.feedback = "" if outcome.success else outcome.message
         return outcome
 
     def _resolve_item_name(self, raw_name: str) -> tuple[int, dict] | None:
@@ -401,9 +408,3 @@ class ShopScene(BaseScene):
             self.channel.render(surface)
         else:
             self._render_ui(surface)
-
-
-from typing import TYPE_CHECKING
-
-if TYPE_CHECKING:
-    from main import GameApp

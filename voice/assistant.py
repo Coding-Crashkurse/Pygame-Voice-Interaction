@@ -74,7 +74,7 @@ class MerchantVoiceAssistant:
         visitor = (visitor_name or "traveler").strip()
         self._visitor_name = visitor or "traveler"
         self._catalog_text = "\n".join(
-            f"- {item['name']} ({item['type']}) costs {item['price']} gold. {item['bonus']}"
+            f"- {item['name']} ({item['type']}) costs {item['price']} gold. {item.get('voice_benefit', item['bonus'])}"
             for item in self._items
         )
 
@@ -136,7 +136,7 @@ Catalog:
         system_message = f"""You are Mira, a helpful but honest merchant. You are speaking with {self._visitor_name}. Use the catalog below when confirming trades.
 Catalog:
 {{catalog}}
-You received the summarized purchase result: {{purchase_message}}. If the trade succeeded, confirm the sale warmly and mention the price. If it failed, explain why and offer alternatives from the catalog. Keep responses <= 3 sentences for voice playback."""
+You received the summarized purchase result: {{purchase_message}}. Use that summary in your reply and speak in natural terms (for example, say "extra damage" instead of +6 ATK). If the trade succeeded, confirm the sale warmly and mention the price. If it failed, explain why and offer alternatives from the catalog. Keep responses <= 3 sentences for voice playback."""
         return (
             ChatPromptTemplate.from_messages(
                 [

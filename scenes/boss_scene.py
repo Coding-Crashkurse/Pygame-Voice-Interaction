@@ -7,6 +7,13 @@ from entities.enemies import BOSS_TEMPLATE, clone_enemy
 from scenes.base import BaseScene
 
 
+from typing import TYPE_CHECKING
+
+
+if TYPE_CHECKING:
+    from main import GameApp
+
+
 class BossScene(BaseScene):
     def __init__(self, app: "GameApp") -> None:
         super().__init__(app)
@@ -107,9 +114,3 @@ class BossScene(BaseScene):
         )
 
         self.app.inventory_overlay.render(surface)
-
-
-from typing import TYPE_CHECKING
-
-if TYPE_CHECKING:
-    from main import GameApp

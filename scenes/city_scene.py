@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import List, Tuple
+from typing import TYPE_CHECKING, List, Tuple
 
 import pygame
 
@@ -13,6 +13,10 @@ from constants import (
 )
 from scenes.base import BaseScene
 from utils.helpers import build_blocking_rects
+
+
+if TYPE_CHECKING:
+    from main import GameApp
 
 
 class CityScene(BaseScene):
@@ -278,9 +282,3 @@ class CityScene(BaseScene):
             TILE_SIZE * 6, TILE_SIZE * 7, TILE_SIZE * 20, TILE_SIZE * 8
         )
         pygame.draw.rect(surface, (52, 130, 90), plaza_rect)
-
-
-from typing import TYPE_CHECKING
-
-if TYPE_CHECKING:
-    from main import GameApp

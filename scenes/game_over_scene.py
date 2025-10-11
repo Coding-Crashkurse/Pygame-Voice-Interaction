@@ -1,12 +1,16 @@
 from __future__ import annotations
 
-from typing import Sequence
+from typing import TYPE_CHECKING, Sequence
 
 import pygame
 
 from constants import SCREEN_HEIGHT, SCREEN_WIDTH, SCENE_START
 from scenes.base import BaseScene
 from ui.components import Button
+
+
+if TYPE_CHECKING:
+    from main import GameApp
 
 
 class GameOverScene(BaseScene):
@@ -51,9 +55,3 @@ class GameOverScene(BaseScene):
             subtitle, subtitle.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2))
         )
         self.retry_button.render(surface)
-
-
-from typing import TYPE_CHECKING
-
-if TYPE_CHECKING:
-    from main import GameApp

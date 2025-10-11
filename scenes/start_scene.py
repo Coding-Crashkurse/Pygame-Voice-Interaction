@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Dict, List, Optional
+from typing import TYPE_CHECKING, Dict, List, Optional
 
 import pygame
 
@@ -8,6 +8,10 @@ from constants import GAME_TITLE, SCREEN_WIDTH, SCENE_CITY
 from entities.player import Player
 from scenes.base import BaseScene
 from ui.components import Button, OptionSelector, TextInput
+
+
+if TYPE_CHECKING:
+    from main import GameApp
 
 
 class StartScene(BaseScene):
@@ -209,9 +213,3 @@ class StartScene(BaseScene):
             color = pygame.Color("#ffcc80") if index == 0 else pygame.Color("white")
             text = self.small_font.render(line, True, color)
             surface.blit(text, (panel.left + 16, panel.top + 18 + index * 26))
-
-
-from typing import TYPE_CHECKING
-
-if TYPE_CHECKING:
-    from main import GameApp

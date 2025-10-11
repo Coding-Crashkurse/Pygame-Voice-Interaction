@@ -1,11 +1,15 @@
 from __future__ import annotations
 
-from typing import List, Tuple
+from typing import TYPE_CHECKING, List, Tuple
 
 import pygame
 
 from constants import SCREEN_HEIGHT, SCREEN_WIDTH
 from entities.player import required_xp
+
+
+if TYPE_CHECKING:
+    from main import GameApp
 
 
 class InventoryOverlay:
@@ -205,9 +209,3 @@ class InventoryOverlay:
             extra = f"x{count}"
             items.append((label, extra))
         return items
-
-
-from typing import TYPE_CHECKING
-
-if TYPE_CHECKING:
-    from main import GameApp

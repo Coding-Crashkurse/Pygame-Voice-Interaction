@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import random
 from dataclasses import dataclass
-from typing import List
+from typing import TYPE_CHECKING, List
 
 import pygame
 
@@ -21,6 +21,10 @@ from entities.enemies import (
     clone_enemy,
 )
 from scenes.base import BaseScene
+
+
+if TYPE_CHECKING:
+    from main import GameApp
 
 
 @dataclass
@@ -191,9 +195,3 @@ class WildernessScene(BaseScene):
         surface.blit(hud_text, hud_rect.topleft)
 
         self.app.inventory_overlay.render(surface)
-
-
-from typing import TYPE_CHECKING
-
-if TYPE_CHECKING:
-    from main import GameApp
